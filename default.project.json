@@ -1,0 +1,37 @@
+{
+  "name": "Poly-Framework",
+  "emitLegacyScripts": false,
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "PolyFramework": {
+        "$className": "Actor",
+        "Src": {
+          "$className": "Folder",
+          "$path": "src"
+        },
+        "Core": {
+          "$path": ".framework/core.luau",
+
+          "Types": {
+            "$path": ".framework/.Types.luau"
+          },
+
+          "Config": {
+            "$path": ".framework/.Config.luau"
+          },
+
+          "UtilityPackages": {
+            "$className": "Folder",
+            "$path": ".framework/UtilityPackages"
+          },
+
+          "Initializer": {
+            "$className": "Actor",
+            "$path": ".framework/.initializer"
+          }
+        }
+      }
+    }
+  }
+}
