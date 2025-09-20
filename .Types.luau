@@ -1,5 +1,5 @@
 --!strict
--- Poly Framework Definition (types only; no requires)
+-- Poly Framework Definition
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Poly root (what `require(Core)` returns)
