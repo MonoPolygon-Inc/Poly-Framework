@@ -54,21 +54,7 @@ What Boot does:
 1. Freezes and exposes `shared.Poly`
 2. Auto-mounts `Core/UtilityPackages` → `Poly.Utils.<Name>`
 3. Scans `Src/Shared` + side folder (Server/Client)
-4. Sorts by `priority` → runs **`:Init(Poly)`** on all, then **`:Start()`**
-
----
-
-## 📜 Required Module Header
-
-Put this at the top of **every** module you write (services, controllers, classes):
-
-```lua
---!strict
--- POLY HEADER
-local Root = script:FindFirstAncestor("PolyFramework")
-local Core = Root:WaitForChild("Core")
-local Poly = require(Core)
-```
+4. Sorts by `priority` → runs **`:Init()`** on all, then **`:Start()`**
 
 ---
 
@@ -77,23 +63,23 @@ local Poly = require(Core)
 Place modules in `Src/Server`, `Src/Client`, or `Src/Shared`.
 Each exports a table with `name`, optional `priority`, and lifecycle:
 
-* **Colon + PascalCase**: `:Init(Poly)`, `:Start()`, (optional) `:Destroy()`
+* **Colon + PascalCase**: `:Init()`, `:Start()`, (optional) `:Destroy()`
 * **Lower `priority` runs first**.
 
 **Server example** (`Src/Server/InventoryService.luau`):
 
 ```lua
 --!strict
--- POLY HEADER
-local Root = script:FindFirstAncestor("PolyFramework")
-local Poly = require(Root.Core)
+local Root  = script:FindFirstAncestor("PolyFramework")
+local Types = require(Root.Core.Types)
+local Poly  = require(Root.Core) :: Types.Poly
 
 local Service = {
   name = "InventoryService",
   priority = 100,
 }
 
-function Service:Init(poly)
+function Service:Init()
   self._store = {}
   self._net = Poly.Net.Server("Inv", { maxEntrance = 200, interval = 2 })
 end
@@ -116,9 +102,9 @@ return Service
 
 ```lua
 --!strict
--- POLY HEADER
-local Root = script:FindFirstAncestor("PolyFramework")
-local Poly = require(Root.Core)
+local Root  = script:FindFirstAncestor("PolyFramework")
+local Types = require(Root.Core.Types)
+local Poly  = require(Root.Core) :: Types.Poly
 
 local Controller = { name = "InventoryController", priority = 100 }
 
@@ -268,7 +254,6 @@ Key fields:
 * Use **colon + PascalCase** lifecycle: `:Init`, `:Start`, `:Destroy`
 * Keep heavy work in `:Start()`; wiring/setup in `:Init()`
 * Use `priority` to control init order (lower runs first)
-* Always include the **POLY HEADER** snippet
 * Rely on `Poly.Utils` for helper utilities (and your UtilityPackages)
 
 ---
@@ -279,12 +264,6 @@ Key fields:
 * **Net not firing** → ensure identifiers match and correct side is used
 * **Timeouts** → raise `Invoke` timeout or inspect callbacks
 * This is an **obfuscated** build; internals are hidden by design
-
----
-
-## 🔖 Types
-
-For strict Luau / IntelliSense, see `Core/Types` (no requires, safe for any build).
 
 ---
 
