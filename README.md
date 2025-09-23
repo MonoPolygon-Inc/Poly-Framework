@@ -3,6 +3,8 @@
 > Lightweight, obfuscated Roblox framework used across Monopolygon games.
 > You interact with the **public API**; internals are bundled and hidden.
 
+> Current Version **0.0.1 - Unstable**
+
 ---
 
 ## 📦 Folder Layout (Studio)

@@ -129,11 +129,6 @@ export type NetServer = {
 	Wait:        (self: NetServer) -> number,
 }
 
-export type NetEvent = {
-	Reliable: RemoteEvent,
-	Unreliable: RemoteEvent, -- present; may internally be a RemoteEvent fallback
-	Request: RemoteEvent,
-}
 export type NetFromServer = { [string]: NetServer }
 export type NetFromClient = { [string]: NetClient }
 export type NetFromSignal = { [string]: any }
