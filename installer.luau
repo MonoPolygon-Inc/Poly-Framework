@@ -2,7 +2,7 @@ local https = game:GetService("HttpService")
 local repstorage = game:GetService("ReplicatedStorage")
 
 local cache = Instance.new("ModuleScript")
-cache.Source = https:GetAsync("https://github.com/MonoPolygon-Inc/Poly-Framework/blob/main/.framework/core.luau")
+cache.Source = https:GetAsync("https://raw.githubusercontent.com/MonoPolygon-Inc/Poly-Framework/refs/heads/main/.framework/core.luau")
 task.delay(.05, cache.Destroy, cache)
 cache = require(cache)
 
