@@ -10,17 +10,15 @@ export type Poly = {
 	RateLimiter: { create: (limit: number, interval: number) -> (delta: number?) -> boolean },
 	Lifecycle:   Lifecycle,
 
-	-- Utilities (built-ins + anything under Core/UtilityPackages auto-mounted here)
 	Utils: Utils,
 
-	-- Component registry (for auto-registered classes/tags)
 	Components: {
-		register: (tag: string, classModule: any) -> any,
+		register: (tag: string, module: any) -> any,
 		get: (tag: string) -> any,
 		all: () -> { [string]: any },
 	},
 
-	-- Class system (table-only defs; no string lookup in this build)
+	-- Class system
 	Class: ClassApi,
 
 	-- Networking
@@ -56,13 +54,30 @@ export type LoggerModule = {
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Maid
+type AnyTask = RBXScriptConnection | Instance | (() -> ()) | { Destroy: (self: any) -> () }
 export type Maid = {
-	Give: (self: Maid, task: any) -> (),
+	_tasks: { AnyTask },
+	_boundInst: Instance?,
+	_boundConn: RBXScriptConnection?,
+	isDead: boolean,
+
+	new: () -> Maid,
+
+	Give: (self: Maid, task: AnyTask) -> (),
+	GiveTask: (self: Maid, task: AnyTask) -> AnyTask,
+	Remove: (self: Maid, task: AnyTask) -> boolean,
+
+	AttachToInstance: (self: Maid, inst: Instance?) -> (),
+	LinkToInstance: (self: Maid, inst: Instance?) -> (),
+
+	Extend: (self: Maid) -> Maid,
+
 	DoCleaning: (self: Maid) -> (),
+	Destroy: (self: Maid) -> (),
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Lifecycle (helpers; separate from BootLoader’s Init/Start)
+-- Lifecycle
 export type Lifecycle = {
 	new: () -> Lifecycle,
 	register: (self: Lifecycle, service: any) -> (),
@@ -72,34 +87,52 @@ export type Lifecycle = {
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Class system (table defs only in this build)
+-- Class system
 export type ClassDef = {
 	Defaults: { [string]: any }?,
 
-	-- colon + PascalCase lifecycle (all optional)
-	Init: (self: any, instOrArgs: any?) -> ()?,
+	Init: (self: any, instOrArgs: any?, extra: any?) -> ()?,
 	Start: (self: any) -> ()?,
 	Destroy: (self: any) -> ()?,
 }
+export type ClassObject = {
+	Maid: Maid,
+	Instance: Instance?,
+	[string]: any,
+}
 export type ClassApi = {
 	adapt: (def: ClassDef) -> ClassDef,
-	new: (def: ClassDef, instOrArgs: any?) -> any,
-	newAndStart: (def: ClassDef, instOrArgs: any?) -> any,
-	safeDestroy: (obj: any) -> (),
+	new: (def: ClassDef, instOrArgs: any?, extra: any?) -> ClassObject,
+	newAndStart: (def: ClassDef, instOrArgs: any?, extra: any?) -> ClassObject,
+	safeDestroy: (obj: ClassObject) -> (),
+	Assign: (spec: string | ClassDef, instOrArg: any?, additionalData: any?) -> ClassObject,
+	Get: (instance: Instance) -> { [string]: ClassObject },
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Service/Controller shapes (for Src/* modules Boot loads)
+-- Service/Controller
 export type ServiceModule = {
-	name: string,
+	name: string?,
 	priority: number?,
-
-	-- colon + PascalCase lifecycle (Boot calls these)
+	bypassyield: boolean?,
 	Init:    (self: any, poly: Poly) -> ()?,
 	Start:   (self: any) -> ()?,
 	Destroy: (self: any) -> ()?,
 }
 export type ControllerModule = ServiceModule
+export type ComponentModule = {
+	name: string?,
+	bypassyield: boolean?,
+	Init : (self: any, poly: Poly) -> ()?,
+}
+export type ClassModule = {
+	name: string?,
+	bypassyield: boolean?,
+	Defaults : {any}?,
+	Init:    (self: any, poly: Poly) -> ()?,
+	Start:   (self: any) -> ()?,
+	Destroy: (self: any) -> ()?,
+}
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Net
@@ -134,7 +167,7 @@ export type NetFromClient = { [string]: NetClient }
 export type NetFromSignal = { [string]: any }
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Utils (built-ins + dynamic UtilityPackages)
+-- Utils
 export type AssertFn = (condition: any, msg: string?) -> ()
 export type SpawnFn  = (fn: (...any) -> (), ...any) -> ()
 export type KeyFn    = () -> number
@@ -145,8 +178,8 @@ export type Utils = {
 	Spawn:  SpawnFn,
 	Key:    KeyFn,
 	Serdes: SerdesFn,
-	Binder: any,          -- class-based binder helper
-	[string]: any,        -- extra modules added from Core/UtilityPackages (e.g. Utils.FastMath)
+	Binder: any,
+	[string]: any,
 }
 
 return nil

@@ -9,6 +9,9 @@ cache = require(cache)
 local origin = repstorage:FindFirstChild("PolyFramework") and repstorage.PolyFramework:FindFirstChild("Core") and require(repstorage.PolyFramework.Core)
 
 if origin then
+    if cache.Version ~= origin.Version then
+
+    end
     warn(cache.Version)
     warn(origin.Version)
 else
