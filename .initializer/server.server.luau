@@ -1,4 +1,4 @@
---!strict
+--!nolint
 local Root = script:FindFirstAncestor("PolyFramework")
 local Poly = require(Root.Core)
 
